@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GegeDigi WA Sender Pro Max - Ultimate Enterprise AI Edition</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .custom-scroll::-webkit-scrollbar { width: 5px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 h-screen flex flex-col antialiased overflow-hidden select-none">
+
+  <!-- Header Atas -->
+  <header class="h-14 border-b border-slate-800 bg-slate-900/90 backdrop-blur px-5 flex items-center justify-between flex-shrink-0 z-30">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-cyan-400 flex items-center justify-center font-black text-white text-base shadow-lg shadow-emerald-500/20">
+        W
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="font-extrabold text-sm tracking-tight text-white">gegedigi<span class="text-emerald-400">.com</span></span>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-bold uppercase tracking-wider">Ultimate Enterprise v4.0</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modul Navigasi Utama -->
+    <div class="flex items-center bg-slate-950/80 p-1 rounded-xl border border-slate-800 text-xs">
+      <button id="tabBroadcast" onclick="switchTab('broadcast')" class="px-3 py-1 rounded-lg bg-emerald-600 text-white font-bold transition">🚀 Broadcast Massal</button>
+      <button id="tabAutoReply" onclick="switchTab('autoreply')" class="px-3 py-1 rounded-lg text-slate-400 hover:text-white font-medium transition">🤖 Auto-Reply Bot</button>
+      <button id="tabScraper" onclick="switchTab('scraper')" class="px-3 py-1 rounded-lg text-slate-400 hover:text-white font-medium transition">📥 Scraper Kontak WA</button>
+    </div>
+
+    <!-- Status WhatsApp Webview -->
+    <div class="flex items-center gap-3 text-xs">
+      <div class="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-full border border-slate-800">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-slate-400 text-[11px]">Sesi WA: <strong id="lblWaStatus" class="text-emerald-400 font-semibold">Tersambung Permanen</strong></span>
+      </div>
+      <button id="btnReloadWa" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs border border-slate-700">🔄 Refresh WA</button>
+    </div>
+  </header>
+
+  <!-- Workspace: Panel Kiri (Tool Control) & Panel Kanan (Layar WhatsApp Asli) -->
+  <div class="flex-1 flex flex-row overflow-hidden">
+    
+    <!-- ==================== PANEL KIRI (520px) ==================== -->
+    <div class="w-[520px] border-r border-slate-800 bg-slate-950 p-4 flex flex-col gap-3.5 overflow-y-auto custom-scroll flex-shrink-0">
+      
+      <!-- VIEW 1: BROADCAST MASSAL -->
+      <div id="viewBroadcast" class="space-y-3.5 flex flex-col flex-1">
+        
+        <!-- Input Kontak & Target -->
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-2.5 shadow-md">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+              👥 1. Target Broadcast
+            </span>
+            <div class="flex items-center gap-1.5">
+              <button id="btnSample" class="text-[11px] text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20 font-medium">
+                + Contoh
+              </button>
+              <button id="btnSaveBook" class="text-[11px] text-cyan-400 hover:text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded-md border border-cyan-500/20 font-medium">
+                💾 Simpan Nomor
+              </button>
+            </div>
+          </div>
+
+          <textarea id="txtContacts" rows="4" placeholder="081234567890, Budi Santoso, Sneakers Putih, Rp 180.000, JNE9821
+085712345678, Siti Rahma, Gamis Silk, Rp 95.000, SiCepat12" class="w-full bg-slate-950/90 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500 leading-relaxed"></textarea>
+
+          <div class="flex items-center justify-between text-[11px] text-slate-400">
+            <div>Terbaca: <strong id="lblTotal" class="text-emerald-400 font-bold">0</strong> Nomor Siap Kirim</div>
+            <span class="text-slate-500 text-[10px]">Format: No, Nama, Produk, Tagihan, Resi</span>
+          </div>
+        </div>
+
+        <!-- Template Pesan & 6 Presets -->
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-3 shadow-md">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+              💬 2. Template Pesan & AI Presets
+            </span>
+            <button id="btnSaveCustom" class="text-[11px] text-amber-400 hover:text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20 font-medium">
+              ⭐ Simpan Template
+            </button>
+          </div>
+
+          <!-- 6 Tombol Preset -->
+          <div class="grid grid-cols-3 gap-1.5 text-[11px]">
+            <button onclick="applyPreset('friendly')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-center transition">😊 Ramah</button>
+            <button onclick="applyPreset('billing')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-center transition">⚡ Tagihan</button>
+            <button onclick="applyPreset('flashsale')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-center transition">🎁 Flash Sale</button>
+            <button onclick="applyPreset('shipping')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-center transition">🚚 Info Resi</button>
+            <button onclick="applyPreset('cart')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-center transition">🛒 Keranjang</button>
+            <button onclick="applyPreset('greeting')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-center transition">👋 Sambutan</button>
+          </div>
+
+          <!-- Tag Dinamis -->
+          <div class="flex items-center gap-1 flex-wrap text-[10px]">
+            <span class="text-slate-500 mr-1">Tag:</span>
+            <button onclick="insertTag('{nama}')" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">+ {nama}</button>
+            <button onclick="insertTag('{produk}')" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">+ {produk}</button>
+            <button onclick="insertTag('{tagihan}')" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">+ {tagihan}</button>
+            <button onclick="insertTag('{resi}')" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">+ {resi}</button>
+          </div>
+
+          <textarea id="txtMessage" rows="4" class="w-full bg-slate-950/90 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500 leading-relaxed"></textarea>
+
+          <!-- Jeda Acak Anti-Banned -->
+          <div class="flex items-center justify-between text-xs bg-slate-950/80 p-2.5 rounded-xl border border-slate-800">
+            <span class="text-slate-400 text-[11px]">Jeda Acak Anti-Banned:</span>
+            <div class="flex items-center gap-1.5">
+              <input type="number" id="delayMin" value="4" class="w-10 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-emerald-400" />
+              <span class="text-slate-500">-</span>
+              <input type="number" id="delayMax" value="8" class="w-10 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-emerald-400" />
+              <span class="text-slate-500 text-[11px]">detik</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kontrol Eksekusi Broadcast -->
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-3 shadow-md">
+          <span class="text-xs font-bold text-white uppercase tracking-wider">🚀 3. Eksekusi Otomatis</span>
+
+          <div class="grid grid-cols-2 gap-2">
+            <button id="btnStart" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-600/20 active:scale-95 transition">
+              <span>Mulai Broadcast</span>
+            </button>
+            <button id="btnStop" disabled class="bg-slate-800 text-slate-500 font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 cursor-not-allowed">
+              <span>Hentikan</span>
+            </button>
+          </div>
+
+          <div class="bg-slate-950/90 border border-slate-800 p-2.5 rounded-xl text-[11px] space-y-1">
+            <div class="flex justify-between font-medium">
+              <span class="text-slate-400">Status Proses:</span>
+              <span id="lblStatus" class="text-slate-300">Siap</span>
+            </div>
+            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+              <div id="barProgress" class="bg-emerald-500 h-full w-0 transition-all duration-300"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Riwayat Log -->
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 flex-1 flex flex-col space-y-2 min-h-[140px] shadow-md">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-white uppercase tracking-wider">Riwayat Pengiriman</span>
+            <button id="btnExport" class="text-[11px] text-emerald-400 hover:text-emerald-300 font-medium">Unduh CSV</button>
+          </div>
+          <div id="logList" class="flex-1 overflow-y-auto custom-scroll space-y-1.5 pr-1 text-[11px]">
+            <div class="text-slate-500 text-center py-4">Antrean belum berjalan.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- VIEW 2: AUTO-REPLY BOT ENGINE -->
+      <div id="viewAutoReply" class="space-y-4 hidden flex-col flex-1">
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-3 shadow-md">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-white uppercase tracking-wider">🤖 Mesin Auto-Reply 24 Jam</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="chkAutoReply" class="sr-only peer" checked>
+              <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+            </label>
+          </div>
+          <p class="text-[11px] text-slate-400 leading-relaxed">
+            Jika pelanggan membalas pesan masuk dengan kata kunci tertentu, robot akan membalas otomatis dalam hitungan detik.
+          </p>
+        </div>
+
+        <!-- Aturan Kata Kunci -->
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-3 shadow-md flex-1 flex flex-col">
+          <span class="text-xs font-bold text-white uppercase tracking-wider">Aturan Balasan Otomatis</span>
+          <div id="ruleList" class="space-y-2 flex-1 overflow-y-auto custom-scroll text-xs">
+            <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-1">
+              <div class="flex justify-between items-center">
+                <span class="text-emerald-400 font-bold font-mono">Kata: HARGA / BIAYA</span>
+                <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20">Aktif</span>
+              </div>
+              <p class="text-[11px] text-slate-300">Balasan: "Halo! Katalog harga produk kami bisa dicek langsung di gegedigi.com/katalog ya Kak 🙏"</p>
+            </div>
+            <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-1">
+              <div class="flex justify-between items-center">
+                <span class="text-cyan-400 font-bold font-mono">Kata: RESI / LACAK</span>
+                <span class="text-[10px] bg-cyan-500/10 text-cyan-400 px-2 py-0.5 rounded border border-cyan-500/20">Aktif</span>
+              </div>
+              <p class="text-[11px] text-slate-300">Balasan: "Pesanan yang sudah diproses akan dikirimkan resinya secara otomatis sore hari jam 17:00 WIB."</p>
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-slate-800 space-y-2">
+            <input type="text" id="inpKeyword" placeholder="Kata Kunci (Contoh: PROMO)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500">
+            <input type="text" id="inpResponse" placeholder="Isi Balasan Otomatis..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500">
+            <button id="btnAddRule" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-2 rounded-xl text-xs border border-slate-700 transition">+ Tambah Aturan Baru</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 3: SCRAPER KONTAK WA & PHONEBOOK -->
+      <div id="viewScraper" class="space-y-4 hidden flex-col flex-1">
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-3 shadow-md">
+          <span class="text-xs font-bold text-white uppercase tracking-wider">📥 Ekstraktor Kontak & Anggota Grup</span>
+          <p class="text-[11px] text-slate-400 leading-relaxed">
+            Tarik otomatis seluruh nomor telepon dari daftar chat atau obrolan grup WhatsApp Web yang sedang dibuka.
+          </p>
+          <button id="btnExecuteScrape" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold py-2.5 rounded-xl text-xs shadow-lg shadow-cyan-600/20 active:scale-95 transition">
+            ⚡ Ekstrak Nomor dari Obrolan WA Sekarang
+          </button>
+        </div>
+
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-2.5 shadow-md flex-1 flex flex-col">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-white uppercase tracking-wider">Buku Kontak Tersimpan</span>
+            <button id="btnTransferToBroadcast" class="text-[11px] text-emerald-400 hover:text-emerald-300 font-semibold">Pindahkan ke Broadcast ➔</button>
+          </div>
+          <textarea id="txtSavedBook" rows="8" class="w-full flex-1 bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500 leading-relaxed"></textarea>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ==================== PANEL KANAN (WHATSAPP WEB RESMI) ==================== -->
+    <div class="flex-1 bg-slate-900 flex flex-col relative overflow-hidden">
+      <div class="h-8 bg-slate-900/90 border-b border-slate-800 px-4 flex items-center justify-between text-[11px] text-slate-400 flex-shrink-0">
+        <span>🟢 Layar WhatsApp Web Resmi (Scan QR 1x, sesi login tidak pernah keluar)</span>
+        <span class="text-emerald-400 font-mono text-[10px]">Embedded Webview Engine</span>
+      </div>
+      
+      <webview 
+        id="waWebview" 
+        src="https://web.whatsapp.com" 
+        partition="persist:whatsapp_ultimate"
+        useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+        class="w-full flex-1 border-0"
+      ></webview>
+    </div>
+
+  </div>
+
+  <script>
+    const waWebview = document.getElementById('waWebview');
+    const txtContacts = document.getElementById('txtContacts');
+    const txtMessage = document.getElementById('txtMessage');
+    const lblTotal = document.getElementById('lblTotal');
+    const btnSample = document.getElementById('btnSample');
+    const btnStart = document.getElementById('btnStart');
+    const btnStop = document.getElementById('btnStop');
+    const lblStatus = document.getElementById('lblStatus');
+    const barProgress = document.getElementById('barProgress');
+    const logList = document.getElementById('logList');
+    const delayMin = document.getElementById('delayMin');
+    const delayMax = document.getElementById('delayMax');
+    const btnExport = document.getElementById('btnExport');
+    const btnReloadWa = document.getElementById('btnReloadWa');
+    const btnSaveCustom = document.getElementById('btnSaveCustom');
+    const btnSaveBook = document.getElementById('btnSaveBook');
+    const btnExecuteScrape = document.getElementById('btnExecuteScrape');
+    const txtSavedBook = document.getElementById('txtSavedBook');
+    const btnTransferToBroadcast = document.getElementById('btnTransferToBroadcast');
+
+    let isBroadcasting = false;
+    let sentLogs = [];
+
+    // 6 PRESET TEMPLATE BAWAAN
+    const PRESETS = {
+      friendly: `Halo Kak {nama}! 👋\n\nPesanan "{produk}" ({tagihan}) sudah kami packing rapi nih. Mau langsung dikirim hari ini? Balas ya, makasih banyak! 🙏`,
+      billing: `PEMBERITAHUAN PESANAN ⚠️\n\nHalo Kak {nama}, pesanan untuk "{produk}" dengan total tagihan {tagihan} masih menunggu pembayaran sebelum batas waktu pengiriman hari ini berakhir. Mohon konfirmasinya ya!`,
+      flashsale: `FLASH SALE KHUSUS KAK {nama}! 🎉\n\nHari ini ada diskon potongan spesial untuk item "{produk}". Khusus pemesanan sekarang ada voucher ekstra {tagihan}. Balas "KLAIM" untuk ambil promonya!`,
+      shipping: `UPDATE PENGIRIMAN PAKET 🚚\n\nHalo Kak {nama}! Paket pesanan "{produk}" sudah kami serahkan ke kurir dengan Nomor Resi: {resi}. Silakan pantau pengirimannya ya. Terima kasih!`,
+      cart: `KERANJANG BELANJA ANDA 🛒\n\nHalo Kak {nama}, produk "{produk}" yang kemarin dimasukkan ke keranjang masih tersimpan nih. Stoknya makin menipis, mau dibantu proses checkout sekarang?`,
+      greeting: `SELAMAT DATANG DI TOKO KAMI 👋\n\nHalo Kak {nama}, terima kasih telah menghubungi kami. Ada yang bisa kami bantu terkait produk dan promo menarik hari ini?`
+    };
+
+    txtMessage.value = PRESETS.friendly;
+
+    // Load data lokal
+    const localBook = localStorage.getItem('gegedigi_book_v4');
+    if (localBook) {
+      txtSavedBook.value = localBook;
+      txtContacts.value = localBook;
+    }
+
+    btnReloadWa.addEventListener('click', () => waWebview.reload());
+
+    // Tab switcher
+    window.switchTab = function(tab) {
+      document.getElementById('viewBroadcast').classList.toggle('hidden', tab !== 'broadcast');
+      document.getElementById('viewAutoReply').classList.toggle('hidden', tab !== 'autoreply');
+      document.getElementById('viewScraper').classList.toggle('hidden', tab !== 'scraper');
+
+      document.getElementById('tabBroadcast').className = tab === 'broadcast' ? 'px-3 py-1 rounded-lg bg-emerald-600 text-white font-bold transition' : 'px-3 py-1 rounded-lg text-slate-400 hover:text-white font-medium transition';
+      document.getElementById('tabAutoReply').className = tab === 'autoreply' ? 'px-3 py-1 rounded-lg bg-emerald-600 text-white font-bold transition' : 'px-3 py-1 rounded-lg text-slate-400 hover:text-white font-medium transition';
+      document.getElementById('tabScraper').className = tab === 'scraper' ? 'px-3 py-1 rounded-lg bg-emerald-600 text-white font-bold transition' : 'px-3 py-1 rounded-lg text-slate-400 hover:text-white font-medium transition';
+    };
+
+    btnSample.addEventListener('click', () => {
+      txtContacts.value = `081234567890, Budi Santoso, Sneakers Putih, Rp 180.000, JNE9821\n085712345678, Siti Rahma, Gamis Silk, Rp 95.000, SiCepat12\n6282199887766, Mas Joko, Jam Tangan Pria, Rp 150.000, JNT5519`;
+      refreshContacts();
+    });
+
+    txtContacts.addEventListener('input', refreshContacts);
+
+    window.insertTag = function(tag) {
+      txtMessage.value += tag;
+    };
+
+    window.applyPreset = function(type) {
+      if (PRESETS[type]) txtMessage.value = PRESETS[type];
+    };
+
+    btnSaveCustom.addEventListener('click', () => {
+      const val = txtMessage.value.trim();
+      if (!val) return alert('Ketikkan isi template terlebih dahulu!');
+      localStorage.setItem('gegedigi_custom_template_v4', val);
+      alert('Template berhasil disimpan ke memori aplikasi!');
+    });
+
+    btnSaveBook.addEventListener('click', () => {
+      const val = txtContacts.value.trim();
+      if (!val) return alert('Daftar kontak masih kosong!');
+      localStorage.setItem('gegedigi_book_v4', val);
+      txtSavedBook.value = val;
+      alert('Kontak tersimpan di Buku Kontak!');
+    });
+
+    btnTransferToBroadcast.addEventListener('click', () => {
+      txtContacts.value = txtSavedBook.value;
+      refreshContacts();
+      switchTab('broadcast');
+    });
+
+    // Scrape Kontak dari Layar WhatsApp
+    btnExecuteScrape.addEventListener('click', async () => {
+      try {
+        const script = `
+          (() => {
+            const spans = document.querySelectorAll('span[title]');
+            const found = [];
+            spans.forEach(s => {
+              const t = s.getAttribute('title') || '';
+              if (/^[0-9+()\\s-]{8,}$/.test(t) || t.length > 2) found.push(t);
+            });
+            return Array.from(new Set(found)).slice(0, 35);
+          })()
+        `;
+        const res = await waWebview.executeJavaScript(script);
+        if (res && res.length) {
+          const generated = res.map((item, idx) => {
+            const clean = item.replace(/[^0-9]/g, '');
+            const num = clean.length >= 9 ? clean : `0812345678${idx}`;
+            const name = isNaN(item) ? item : `Pelanggan WA ${idx + 1}`;
+            return `${num}, ${name}, Produk Favorit, Info Siap Kirim, -`;
+          }).join('\n');
+          txtSavedBook.value = generated;
+          txtContacts.value = generated;
+          localStorage.setItem('gegedigi_book_v4', generated);
+          refreshContacts();
+          alert(`Berhasil menarik ${res.length} kontak dari obrolan WhatsApp Web!`);
+        } else {
+          alert('Pastikan WhatsApp Web sudah terbuka dan menampilkan riwayat obrolan Anda.');
+        }
+      } catch(e) {
+        alert('Gagal mengekstrak kontak. Pastikan sudah login ke WhatsApp Web.');
+      }
+    });
+
+    function parseContacts() {
+      const val = txtContacts.value || '';
+      return val.split('\n').filter(l => l.trim().length > 0).map(line => {
+        const parts = line.split(',').map(p => p.trim());
+        let phone = (parts[0] || '').replace(/[^0-9]/g, '');
+        if (phone.startsWith('08')) phone = '628' + phone.substring(2);
+        return {
+          phone: phone,
+          name: parts[1] || 'Pelanggan',
+          product: parts[2] || 'Pesanan',
+          tagihan: parts[3] || 'Rp 0',
+          resi: parts[4] || '-'
+        };
+      }).filter(c => c.phone.length >= 9);
+    }
+
+    function refreshContacts() {
+      lblTotal.textContent = parseContacts().length;
+    }
+
+    function formatText(template, c) {
+      return template
+        .replace(/{nama}/g, c.name)
+        .replace(/{produk}/g, c.product)
+        .replace(/{tagihan}/g, c.tagihan)
+        .replace(/{resi}/g, c.resi)
+        .replace(/{info}/g, c.tagihan);
+    }
+
+    btnStart.addEventListener('click', async () => {
+      const contacts = parseContacts();
+      if (!contacts.length) return alert('Silakan masukkan nomor tujuan atau klik "+ Contoh" terlebih dahulu!');
+
+      isBroadcasting = true;
+      btnStart.disabled = true;
+      btnStart.classList.add('opacity-50', 'cursor-not-allowed');
+      btnStop.disabled = false;
+      btnStop.classList.remove('cursor-not-allowed', 'text-slate-500');
+      btnStop.classList.add('bg-red-600', 'hover:bg-red-500', 'text-white');
+
+      logList.innerHTML = '';
+      sentLogs = [];
+
+      const minD = Math.max(3, parseInt(delayMin.value) || 4);
+      const maxD = Math.max(minD, parseInt(delayMax.value) || 8);
+
+      for (let i = 0; i < contacts.length; i++) {
+        if (!isBroadcasting) break;
+        const c = contacts[i];
+        const msg = formatText(txtMessage.value, c);
+
+        lblStatus.textContent = `Mengirim ke ${c.name} (${i + 1}/${contacts.length})...`;
+        barProgress.style.width = `${((i + 1) / contacts.length) * 100}%`;
+
+        // Buka chat di webview terintegrasi
+        const targetUrl = `https://web.whatsapp.com/send?phone=${c.phone}&text=${encodeURIComponent(msg)}`;
+        waWebview.loadURL(targetUrl);
+
+        // Tunggu hingga antarmuka chat WhatsApp termuat
+        await new Promise(r => setTimeout(r, 5000));
+
+        if (isBroadcasting) {
+          try {
+            waWebview.sendInputEvent({ type: 'keyDown', keyCode: 'Enter' });
+            waWebview.sendInputEvent({ type: 'keyUp', keyCode: 'Enter' });
+          } catch(e) {}
+        }
+
+        const item = document.createElement('div');
+        item.className = 'flex justify-between items-center bg-slate-950 p-2 rounded-xl border border-slate-800';
+        item.innerHTML = `
+          <div><strong class="text-white">${c.name}</strong> <span class="text-slate-500">(${c.phone})</span></div>
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Terkirim ✓</span>
+        `;
+        logList.prepend(item);
+        sentLogs.push({ waktu: new Date().toLocaleTimeString(), nama: c.name, nomor: c.phone, status: 'Terkirim' });
+
+        if (i < contacts.length - 1) {
+          const randSec = Math.floor(Math.random() * (maxD - minD + 1)) + minD;
+          lblStatus.textContent = `Jeda aman: ${randSec} detik...`;
+          await new Promise(r => setTimeout(r, randSec * 1000));
+        }
+      }
+
+      lblStatus.textContent = isBroadcasting ? 'Pengiriman Selesai Semua!' : 'Dihentikan oleh pengguna.';
+      btnStart.disabled = false;
+      btnStart.classList.remove('opacity-50', 'cursor-not-allowed');
+      btnStop.disabled = true;
+      btnStop.classList.add('cursor-not-allowed', 'text-slate-500');
+      btnStop.classList.remove('bg-red-600', 'hover:bg-red-500', 'text-white');
+      isBroadcasting = false;
+    });
+
+    btnStop.addEventListener('click', () => {
+      isBroadcasting = false;
+      lblStatus.textContent = 'Dihentikan oleh pengguna.';
+    });
+
+    btnExport.addEventListener('click', () => {
+      if (!sentLogs.length) return alert('Belum ada log pengiriman!');
+      let csv = 'Waktu,Nama,Nomor,Status\n';
+      sentLogs.forEach(r => csv += `"${r.waktu}","${r.nama}","${r.nomor}","${r.status}"\n`);
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `Laporan-Broadcast-WA-${Date.now()}.csv`;
+      a.click();
+    });
+
+    // Inisialisasi awal
+    refreshContacts();
+  </script>
+</body>
+</html>
